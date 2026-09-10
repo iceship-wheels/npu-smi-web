@@ -1,0 +1,13 @@
+{
+  "name": "npu-smi-web",
+  "version": "1.0.0",
+  "description": "NPU 实时监控与排队占用管理",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "ssh2": "^1.15.0"
+  }
+}
