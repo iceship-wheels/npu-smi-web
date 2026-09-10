@@ -8,11 +8,15 @@ function fmtDT(iso) {
 }
 function toLocalInput(dt) {
   const p = (n) => String(n).padStart(2, "0");
-  return `${dt.getFullYear()}-${p(dt.getMonth() + 1)}-${p(dt.getDate())}T${p(dt.getHours())}:${p(dt.getMinutes())}`;
+  return `${dt.getFullYear()}-${p(dt.getMonth() + 1)}-${p(dt.getDate())} ${p(dt.getHours())}:${p(dt.getMinutes())}`;
 }
-/** datetime-local 值 +1 小时 */
+/** 解析输入框中的 24 小时制时间 (空格或 T 分隔均可) */
+function parseLocalDT(v) {
+  return v ? new Date(v.trim().replace(" ", "T")) : new Date(NaN);
+}
+/** 24 小时制时间 +1 小时 */
 function plus1h(v) {
-  const d = new Date(v);
+  const d = parseLocalDT(v);
   return isNaN(d.getTime()) ? "" : toLocalInput(new Date(d.getTime() + 3600 * 1000));
 }
 function esc(s) {
@@ -93,14 +97,14 @@ function hostCardShell(name) {
     <div class="queue-box"></div>
     <form class="resv-form" data-host="${esc(name)}">
       <div class="resv-grid">
-        <label>卡范围 <small>如 0-3 / 0,1,4 / all</small>
+        <label>卡范围
           <input name="cards" type="text" placeholder="0-3" value="all">
         </label>
         <label>开始时间
-          <input name="start" type="datetime-local" value="${toLocalInput(now)}" required>
+          <input name="start" type="text" placeholder="YYYY-MM-DD HH:MM" value="${toLocalInput(now)}" required>
         </label>
         <label>结束时间
-          <input name="end" type="datetime-local" value="${plus1h(toLocalInput(now))}" required>
+          <input name="end" type="text" placeholder="YYYY-MM-DD HH:MM" value="${plus1h(toLocalInput(now))}" required>
         </label>
         <label>占用人
           <input name="owner" type="text" placeholder="你的名字" required>
@@ -143,8 +147,8 @@ function renderHosts() {
     const start = form.elements.start, end = form.elements.end;
     start.addEventListener("change", () => { end.value = plus1h(start.value); });
     end.addEventListener("change", () => {
-      const s = new Date(start.value);
-      let d = new Date(end.value);
+      const s = parseLocalDT(start.value);
+      let d = parseLocalDT(end.value);
       if (!end.value || !start.value || isNaN(d) || isNaN(s)) return;
       // 结束不晚于开始 或 不晚于当前时间 时, 视为跨天: 日期 +1 天
       for (let i = 0; i < 8 && (d <= s || d <= new Date()); i++) {
@@ -232,8 +236,8 @@ function initForm() {
     const body = {
       host: form.dataset.host,
       cards: form.elements.cards.value.trim() || "all",
-      start: form.elements.start.value,
-      end: form.elements.end.value,
+      start: form.elements.start.value.trim().replace(" ", "T"),
+      end: form.elements.end.value.trim().replace(" ", "T"),
       owner: form.elements.owner.value.trim(),
     };
     msg.className = "form-msg";
