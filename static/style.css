@@ -1,29 +1,27 @@
-/* 集群监控协调平台 - Klein Blue / Hermes 官网风格
- * 克莱因蓝(IKB) + 米白双色体系; 大标题用 Didone 衬线(Roman)体,
- * 标签/数据用等宽字体全大写宽字距, 直角边框, 色块对比强烈
+/* 集群监控协调平台 - Haute Couture Editorial
+ * 稍浅的克莱因蓝(ultramarine) + 米白; Bodoni Moda(Didone)镂空大标题,
+ * 发丝线分隔、描边按钮、宽字距等宽小字; 卡片错峰入场 + 描边水印
  */
 :root {
-  --ikb: #002fa7;          /* 克莱因蓝 */
-  --ikb-deep: #002380;
-  --ikb-soft: #e8ecfb;     /* 浅蓝底 */
-  --paper: #f6f7fb;        /* 米白底 */
+  --ikb: #2b50df;          /* 稍浅的克莱因蓝 */
+  --ikb-deep: #1e3cb8;
+  --ikb-soft: #edf1fd;     /* 极浅蓝底 */
+  --paper: #f7f8fc;        /* 米白底 */
   --card: #ffffff;
-  --ink: #0a1a66;
-  --muted: #5a68b8;
-  --faint: #93a0dd;
-  --line: #c9d1f2;
+  --ink: #16246e;
+  --muted: #6474c4;
+  --faint: #9fabe0;
+  --line: #d3daf5;
 
-  --green: #0e8a4c;
-  --green-soft: #e2f4ea;
   --red: #d92d2d;
   --red-soft: #fdeaea;
   --warn: #8a5a00;
   --warn-bg: #fff3c9;
   --warn-border: #e4c65f;
-  --idle-bg: #eef0f9;
+  --idle-bg: #eef1fa;
 
-  /* Roman 衬线展示体 (Didone 风格) */
-  --serif: "Didot", "Bodoni MT", "Bodoni 72", "Playfair Display", "Times New Roman", "Songti SC", "SimSun", serif;
+  /* Didone 展示体: 大标题镂空用 */
+  --serif: "Bodoni Moda", "Didot", "Bodoni MT", "Playfair Display", "Times New Roman", "Songti SC", "SimSun", serif;
   /* 等宽: 标签 / 数据 / 小字 */
   --mono: "Cascadia Code", "Cascadia Mono", ui-monospace, Consolas, monospace;
   --sans: var(--mono);
@@ -39,48 +37,74 @@ body {
   color: var(--ink);
 }
 
-/* ---- 顶栏: 克莱因蓝色块 + 白色 Roman 大标题 ---- */
+/* ---- 顶栏: 米白底 + 镂空 Roman 大标题 + 发丝线 ---- */
 header {
   display: flex;
   align-items: baseline;
-  gap: 16px;
-  padding: 20px 28px 16px;
-  background: var(--ikb);
-  color: #fff;
-  border-bottom: 3px solid var(--ikb-deep);
+  gap: 20px;
+  padding: 26px 32px 20px;
+  background: var(--paper);
+  border-bottom: 1px solid var(--ikb);
 }
 header h1 {
   margin: 0;
   font-family: var(--serif);
-  font-size: 30px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  line-height: 1;
-  color: #fff;
+  font-size: 42px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  line-height: 1.05;
+  color: transparent;
+  -webkit-text-stroke: 1.5px var(--ikb);
+  animation: rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+@supports not (-webkit-text-stroke: 1px black) {
+  header h1 { color: var(--ikb); }
 }
 .refresh-time {
   font-family: var(--mono);
   font-size: 11px;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: #cdd6ff;
+  color: var(--muted);
 }
 
-main { padding: 24px 28px 56px; }
+main { position: relative; padding: 28px 32px 64px; }
+
+/* 描边水印: 置于卡片之后, 不拦截交互 */
+main::before {
+  content: "NPU";
+  position: absolute;
+  top: -14px;
+  right: 24px;
+  z-index: 0;
+  font-family: var(--serif);
+  font-size: 150px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  color: transparent;
+  -webkit-text-stroke: 1px var(--line);
+  pointer-events: none;
+  user-select: none;
+}
 
 .hint {
-  margin-top: 20px;
+  position: relative;
+  z-index: 1;
+  margin-top: 24px;
   font-size: 11px;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--muted);
 }
 
 /* ---- 卡片布局: flex 换行, 末行也撑满整行 ---- */
 .hosts-grid {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-wrap: wrap;
-  gap: 18px;
+  gap: 20px;
   align-items: stretch;
 }
 
@@ -90,16 +114,25 @@ main { padding: 24px 28px 56px; }
   flex: 1 1 340px;
   min-width: 300px;
   background: var(--card);
-  border: 1.5px solid var(--ikb);
-  border-top: 6px solid var(--ikb);
+  border: 1px solid var(--line);
+  border-top: 2px solid var(--ikb);
   border-radius: 0;
-  padding: 16px 18px 18px;
-  box-shadow: 6px 6px 0 var(--ikb-soft);
+  padding: 18px 20px 20px;
+  box-shadow: 0 1px 0 rgba(22, 36, 110, 0.04);
+  animation: rise 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) both;
 }
-.host-card.offline {
-  border-color: var(--faint);
-  border-top-color: var(--faint);
-  box-shadow: 6px 6px 0 #eef0f9;
+.host-card:nth-child(1) { animation-delay: 0.05s; }
+.host-card:nth-child(2) { animation-delay: 0.11s; }
+.host-card:nth-child(3) { animation-delay: 0.17s; }
+.host-card:nth-child(4) { animation-delay: 0.23s; }
+.host-card:nth-child(5) { animation-delay: 0.29s; }
+.host-card:nth-child(6) { animation-delay: 0.35s; }
+.host-card:hover { border-color: var(--ikb); }
+.host-card.offline { border-top-color: var(--faint); }
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
 }
 
 .host-head {
@@ -109,14 +142,13 @@ main { padding: 24px 28px 56px; }
   gap: 8px;
   margin-bottom: 12px;
   padding-bottom: 10px;
-  border-bottom: 1.5px solid var(--ikb);
+  border-bottom: 1px solid var(--line);
 }
-.host-card.offline .host-head { border-bottom-color: var(--line); }
 .host-name {
   font-family: var(--serif);
   font-weight: 700;
-  font-size: 22px;
-  letter-spacing: 0.02em;
+  font-size: 24px;
+  letter-spacing: 0.03em;
   color: var(--ikb);
 }
 .host-card.offline .host-name { color: var(--muted); }
@@ -124,7 +156,7 @@ main { padding: 24px 28px 56px; }
 .badge {
   font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   padding: 4px 10px;
   border-radius: 0;
@@ -139,7 +171,7 @@ main { padding: 24px 28px 56px; }
 .announce {
   margin: 0 0 10px;
   padding: 6px 10px;
-  border: 1.5px dashed var(--line);
+  border: 1px dashed var(--line);
   border-radius: 0;
   font-size: 12px;
   color: var(--muted);
@@ -175,7 +207,7 @@ main { padding: 24px 28px 56px; }
   margin-top: 6px;
   font-family: var(--mono);
   font-size: 10px;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--faint);
 }
@@ -185,17 +217,17 @@ main { padding: 24px 28px 56px; }
 .chip-table th {
   font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--muted);
-  border-bottom: 1.5px solid var(--ikb);
+  border-bottom: 1px solid var(--ikb);
 }
 .chip-table td:first-child { font-family: var(--mono); }
 .usage-cell { min-width: 104px; }
 .usage-label { white-space: nowrap; font-family: var(--mono); font-size: 11px; color: var(--muted); }
 
 .progress {
-  height: 7px;
+  height: 5px;
   background: var(--idle-bg);
   border-radius: 0;
   overflow: hidden;
@@ -216,11 +248,11 @@ main { padding: 24px 28px 56px; }
 .queue-title {
   margin-top: 14px;
   padding-top: 10px;
-  border-top: 1.5px solid var(--line);
+  border-top: 1px solid var(--line);
   font-family: var(--serif);
-  font-size: 16px;
+  font-size: 17px;
   font-weight: 700;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.05em;
   color: var(--ikb);
 }
 
@@ -264,7 +296,7 @@ main { padding: 24px 28px 56px; }
 .queue-list li .tag-now {
   font-size: 9px;
   font-weight: 700;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   background: #fff;
   color: var(--ikb);
@@ -292,7 +324,7 @@ main { padding: 24px 28px 56px; }
 .resv-form {
   margin-top: 14px;
   padding-top: 12px;
-  border-top: 1.5px solid var(--line);
+  border-top: 1px solid var(--line);
 }
 .resv-grid {
   display: grid;
@@ -303,7 +335,7 @@ main { padding: 24px 28px 56px; }
   display: block;
   font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
   margin: 0;
   color: var(--muted);
@@ -316,7 +348,7 @@ main { padding: 24px 28px 56px; }
   min-width: 0;
   margin-top: 5px;
   padding: 7px 10px;
-  border: 1.5px solid var(--line);
+  border: 1px solid var(--line);
   border-radius: 0;
   font-size: 12.5px;
   font-family: var(--mono);
@@ -327,32 +359,33 @@ main { padding: 24px 28px 56px; }
 .resv-form input:focus {
   outline: none;
   border-color: var(--ikb);
-  box-shadow: 3px 3px 0 var(--ikb-soft);
+  box-shadow: 0 1px 0 var(--ikb);
 }
+/* 描边按钮: 悬停反色填充 */
 .resv-form button {
   width: 100%;
   margin-top: 12px;
   padding: 10px;
-  border: none;
+  border: 1.5px solid var(--ikb);
   border-radius: 0;
-  background: var(--ikb);
-  color: #fff;
+  background: transparent;
+  color: var(--ikb);
   font-family: var(--sans);
   font-size: 12px;
   font-weight: 700;
-  letter-spacing: 0.28em;
+  letter-spacing: 0.3em;
   text-transform: uppercase;
   cursor: pointer;
-  box-shadow: 4px 4px 0 var(--ikb-deep);
-  transition: transform 0.1s, box-shadow 0.1s, background 0.15s;
+  transition: background 0.18s, color 0.18s, transform 0.1s;
 }
-.resv-form button:hover { background: var(--ikb-deep); }
-.resv-form button:active {
-  transform: translate(2px, 2px);
-  box-shadow: 0 0 0 var(--ikb-deep);
-}
+.resv-form button:hover { background: var(--ikb); color: #fff; }
+.resv-form button:active { transform: translateY(1px); }
 
 .form-msg { margin-top: 9px; font-size: 12.5px; font-weight: 700; }
-.form-msg.ok { color: var(--green); }
+.form-msg.ok { color: #0e8a4c; }
 .form-msg.err { color: var(--red); }
 .form-msg.warn { color: var(--warn); white-space: pre-line; }
+
+@media (prefers-reduced-motion: reduce) {
+  header h1, .host-card { animation: none; }
+}
