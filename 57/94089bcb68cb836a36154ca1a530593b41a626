@@ -1,0 +1,31 @@
+README.md
+  s_37b731079cc649::t_abcd68c73e02a0 3,5,9,11,13-18,20,30,43,45,47-48,50
+  s_37b731079cc649::t_90153db97c5c55 1-2,4,6-8,10,12,19,21-29,31-42,44,46,49
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.2",
+  "base_commit_sha": "5794089bcb68cb836a36154ca1a530593b41a626",
+  "prompts": {},
+  "sessions": {
+    "s_37b731079cc649": {
+      "agent_id": {
+        "tool": "trae",
+        "id": "6aa2d2ff7cb57c585a3ae445",
+        "model": "Doubao-Seed-2.1-pro__dev"
+      },
+      "human_author": "IceShip423 <15985770423@163.com>",
+      "custom_attributes": {
+        "tool_name": "Write",
+        "source_scene": "agent",
+        "runtime_client": "trae-tob-git-ai",
+        "tool_use_id": "6aa2de087cb57c585a3ae744",
+        "session_id": "6aa2d2ff7cb57c585a3ae445",
+        "operation_id": "6aa2de087cb57c585a3ae744",
+        "external_session_id": "6aa2d2ff7cb57c585a3ae445",
+        "edit_kind": "file_edit",
+        "client_type": "ide"
+      }
+    }
+  }
+}
