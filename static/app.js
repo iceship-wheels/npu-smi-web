@@ -183,6 +183,15 @@ function renderHosts() {
       if (ev.key === "Escape") { el.textContent = announcements[el.dataset.host] || ""; el.blur(); }
     });
   });
+  // 卡片点击选中: 点击卡片空白区域切换选中态 (表单/按钮/公告等交互元素不触发)
+  box.querySelectorAll(".host-card").forEach((card) => {
+    card.addEventListener("click", (ev) => {
+      if (ev.target.closest("input, button, form, .announce, .del-btn, table, select, textarea")) return;
+      const wasSelected = card.classList.contains("selected");
+      box.querySelectorAll(".host-card.selected").forEach((c) => c.classList.remove("selected"));
+      if (!wasSelected) card.classList.add("selected");
+    });
+  });
   updateCards();
 }
 
@@ -278,3 +287,13 @@ refreshAnnouncements();
 setInterval(refreshHosts, 5000);
 setInterval(refreshQueue, 10000);
 setInterval(refreshAnnouncements, 10000);
+
+/* ---------------- 底部大时钟 ---------------- */
+function updateBigClock() {
+  const d = new Date();
+  const p = (n) => String(n).padStart(2, "0");
+  const el = $("#big-clock");
+  if (el) el.textContent = `${p(d.getHours())}:${p(d.getMinutes())}`;
+}
+updateBigClock();
+setInterval(updateBigClock, 10000);

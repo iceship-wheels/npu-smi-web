@@ -37,28 +37,25 @@ body {
   color: var(--ink);
 }
 
-/* ---- 顶栏: 米白底 + 镂空 Roman 大标题 + 发丝线 ---- */
+/* ---- 顶栏: 实心粗衬线大标题 + 紧贴粗横线 ---- */
 header {
   display: flex;
   align-items: baseline;
   gap: 20px;
-  padding: 26px 32px 20px;
+  padding: 26px 32px 0;
   background: var(--paper);
-  border-bottom: 1px solid var(--ikb);
 }
 header h1 {
   margin: 0;
-  font-family: var(--serif);
-  font-size: 42px;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  line-height: 1.05;
-  color: transparent;
-  -webkit-text-stroke: 1.5px var(--ikb);
+  font-family: "Playfair Display", "Bodoni Moda", "Didot", "Bodoni MT", "Times New Roman", serif;
+  font-size: 58px;
+  font-weight: 900;
+  letter-spacing: 0.01em;
+  line-height: 1;
+  color: var(--ikb);
+  border-bottom: 8px solid var(--ikb);
+  padding-bottom: 0;
   animation: rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
-}
-@supports not (-webkit-text-stroke: 1px black) {
-  header h1 { color: var(--ikb); }
 }
 .refresh-time {
   font-family: var(--mono);
@@ -66,27 +63,10 @@ header h1 {
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--muted);
+  white-space: nowrap;
 }
 
 main { position: relative; padding: 28px 32px 64px; }
-
-/* 描边水印: 置于卡片之后, 不拦截交互 */
-main::before {
-  content: "NPU";
-  position: absolute;
-  top: -14px;
-  right: 24px;
-  z-index: 0;
-  font-family: var(--serif);
-  font-size: 150px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  line-height: 1;
-  color: transparent;
-  -webkit-text-stroke: 1px var(--line);
-  pointer-events: none;
-  user-select: none;
-}
 
 .hint {
   position: relative;
@@ -115,11 +95,14 @@ main::before {
   min-width: 300px;
   background: var(--card);
   border: 1px solid var(--line);
-  border-top: 2px solid var(--ikb);
+  border-top: 3px solid var(--ikb);
   border-radius: 0;
   padding: 18px 20px 20px;
   box-shadow: 0 1px 0 rgba(22, 36, 110, 0.04);
   animation: rise 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.3s;
+  position: relative;
 }
 .host-card:nth-child(1) { animation-delay: 0.05s; }
 .host-card:nth-child(2) { animation-delay: 0.11s; }
@@ -129,6 +112,12 @@ main::before {
 .host-card:nth-child(6) { animation-delay: 0.35s; }
 .host-card:hover { border-color: var(--ikb); }
 .host-card.offline { border-top-color: var(--faint); }
+
+/* ---- 选中态: 加粗边框 ---- */
+.host-card.selected {
+  border: 2.5px solid var(--ikb);
+  border-top-width: 3px;
+}
 
 @keyframes rise {
   from { opacity: 0; transform: translateY(14px); }
@@ -388,4 +377,69 @@ main::before {
 
 @media (prefers-reduced-motion: reduce) {
   header h1, .host-card { animation: none; }
+}
+
+/* ---- 底部巨大时钟 ---- */
+footer {
+  position: relative;
+  text-align: center;
+  padding: 10px 0 200px;
+  overflow: hidden;
+}
+/* 渐变点阵: 从上到下由细到粗、由疏到密 */
+footer .dot-grid {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+footer .dot-grid .dots {
+  position: absolute;
+  left: 0;
+  right: 0;
+}
+footer .dots-sm {
+  top: 0;
+  height: 50%;
+  background-image: radial-gradient(circle, var(--ikb) 0.6px, transparent 0.6px);
+  background-size: 16px 16px;
+  opacity: 0.25;
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 60%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 60%, transparent 100%);
+}
+footer .dots-md {
+  top: 25%;
+  height: 45%;
+  background-image: radial-gradient(circle, var(--ikb) 1.4px, transparent 1.4px);
+  background-size: 22px 22px;
+  background-position: 8px 11px;
+  opacity: 0.35;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 40%, #000 70%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 40%, #000 70%, transparent 100%);
+}
+footer .dots-lg {
+  top: 50%;
+  bottom: 0;
+  background-image: radial-gradient(circle, var(--ikb) 2.5px, transparent 2.5px);
+  background-size: 30px 30px;
+  background-position: 4px 15px;
+  opacity: 0.4;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 50%, #000 100%);
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 50%, #000 100%);
+}
+.big-clock {
+  position: relative;
+  z-index: 1;
+  font-family: "Playfair Display", "Bodoni Moda", "Didot", serif;
+  font-size: clamp(80px, 18vw, 220px);
+  font-weight: 900;
+  line-height: 1;
+  color: transparent;
+  -webkit-text-stroke: 4px var(--ikb);
+  letter-spacing: 0.02em;
+  user-select: none;
+  pointer-events: none;
 }

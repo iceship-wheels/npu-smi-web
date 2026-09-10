@@ -3,15 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>集群监控协调平台</title>
+<title>NPU-SMI Monitor</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400..900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,700;900&family=Playfair+Display:wght@900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
 <header>
-  <h1>集群监控协调平台</h1>
+  <h1>NPU-SMI Monitor</h1>
   <span id="refresh-time" class="refresh-time"></span>
 </header>
 
@@ -19,6 +19,15 @@
   <div id="hosts" class="hosts-grid"></div>
   <p class="hint">重叠仅提示不拦截，请自行协调。只能排未来一周内的占用。</p>
 </main>
+
+<footer>
+  <div class="dot-grid">
+    <div class="dots dots-sm"></div>
+    <div class="dots dots-md"></div>
+    <div class="dots dots-lg"></div>
+  </div>
+  <div id="big-clock" class="big-clock"></div>
+</footer>
 
 <script src="/static/app.js"></script>
 </body>
