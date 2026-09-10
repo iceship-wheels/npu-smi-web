@@ -1,0 +1,60 @@
+static/app.js
+  s_37b731079cc649::t_ab0963e67ee612 296
+  s_37b731079cc649::t_c7f50ecbb11952 290-295,297-299
+  s_37b731079cc649::t_d1dd27b8b141c0 186-194
+static/style.css
+  s_37b731079cc649::t_fd63e5c45b3cef 386
+  h_5c54433fb44369 389,405-411,415,417-419,424,426-431
+  s_37b731079cc649::t_11e3df9b36e9ec 381-383,385,388,433,436-440,442-445
+  s_37b731079cc649::t_8481d1599e009e 390,394-395,398-402,412-414,416,420-421,423
+  s_37b731079cc649::t_f6c36be621c1a9 404,425
+  s_37b731079cc649::t_b2640a8f0ec26a 53
+  s_37b731079cc649::t_170e94bbca3a56 116
+  s_37b731079cc649::t_ea712c4c2243a1 441
+  s_37b731079cc649::t_7d983e656b08c0 384,387,391-393,396-397,432,434-435
+  s_37b731079cc649::t_a33c7a4a5e2ef5 403,422
+  s_37b731079cc649::t_cd74881946e6c4 103-105,117-120
+  s_37b731079cc649::t_a9219e666ece97 45,50,52,55,66
+  s_37b731079cc649::t_243187978cc2d8 54
+  s_37b731079cc649::t_1706b55cb2fdd1 51
+  s_37b731079cc649::t_f00444cbaba44d 98
+  s_37b731079cc649::t_aec7e1d1b9c49e 40,56-57
+  s_37b731079cc649::t_5953e302969147 121
+static/index.html
+  s_37b731079cc649::t_1a2c2a870cc906 24-28
+  s_37b731079cc649::t_230995e147c11b 23,29-31
+  s_37b731079cc649::t_d94f8704b85ffb 6,9
+  s_37b731079cc649::t_653fc56d1baac0 14
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.2",
+  "base_commit_sha": "69c69c51c7e7f98ebcb86d8fef288e49cb6aa2e1",
+  "prompts": {},
+  "humans": {
+    "h_5c54433fb44369": {
+      "author": "IceShip423 <15985770423@163.com>"
+    }
+  },
+  "sessions": {
+    "s_37b731079cc649": {
+      "agent_id": {
+        "tool": "trae",
+        "id": "6aa2d2ff7cb57c585a3ae445",
+        "model": "Doubao-Seed-2.1-pro__dev"
+      },
+      "human_author": "IceShip423 <15985770423@163.com>",
+      "custom_attributes": {
+        "session_id": "6aa2d2ff7cb57c585a3ae445",
+        "tool_use_id": "6aa2de087cb57c585a3ae744",
+        "external_session_id": "6aa2d2ff7cb57c585a3ae445",
+        "source_scene": "agent",
+        "client_type": "ide",
+        "tool_name": "Write",
+        "operation_id": "6aa2de087cb57c585a3ae744",
+        "edit_kind": "file_edit",
+        "runtime_client": "trae-tob-git-ai"
+      }
+    }
+  }
+}
