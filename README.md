@@ -11,6 +11,27 @@ npm start
 # Open http://localhost:8000
 ```
 
+## Stop / Restart
+
+Linux / macOS:
+
+```bash
+# Stop
+pkill -f "node server.js"
+
+# Restart
+pkill -f "node server.js"; npm start
+```
+
+Windows (PowerShell):
+
+```powershell
+# Stop (kill the process listening on port 8000)
+Get-NetTCPConnection -LocalPort 8000 -State Listen | ForEach-Object { Stop-Process -Id $_.OwningProcess -Force }
+
+# Restart: run the command above, then npm start
+```
+
 ## Prerequisites
 
 - Node.js ≥ 16
