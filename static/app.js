@@ -87,9 +87,9 @@ function queueHTML(name) {
 }
 
 /** 卡片骨架 (含底部表单, 只在设备列表变化时重建, 避免刷新打断输入) */
-function hostCardShell(name) {
+function hostCardShell(name, idx) {
   const now = new Date();
-  return `<div class="host-card" data-host="${esc(name)}">
+  return `<div class="host-card tone-${idx % 6}" data-host="${esc(name)}">
     <div class="host-head"><span class="host-name">${esc(name)}</span><span class="badge-slot"></span></div>
     <div class="announce" title="双击编辑公告" data-host="${esc(name)}"></div>
     <div class="status-box"></div>
@@ -140,7 +140,7 @@ function updateCards() {
 /** 设备列表变化时整体重建 */
 function renderHosts() {
   const box = $("#hosts");
-  box.innerHTML = hostNames.map(hostCardShell).join("");
+  box.innerHTML = hostNames.map((name, idx) => hostCardShell(name, idx)).join("");
   // 开始时间变化时, 结束时间自动 = 开始时间 + 1 小时;
   // 结束时间改到不晚于开始/当前时间时, 视为跨天: 结束日期自动 +1 天(开始时间不变)
   box.querySelectorAll(".resv-form").forEach((form) => {
