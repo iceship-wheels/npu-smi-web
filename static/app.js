@@ -14,6 +14,15 @@ function toLocalInput(dt) {
 function parseLocalDT(v) {
   return v ? new Date(v.trim().replace(" ", "T")) : new Date(NaN);
 }
+/** Date -> 带时区偏移的 ISO (如 2026-09-23T21:15:00+08:00), 服务器按绝对时刻解析, 避免时区偏差 */
+function toOffsetISO(d) {
+  if (isNaN(d.getTime())) return "";
+  const p = (n) => String(n).padStart(2, "0");
+  const off = -d.getTimezoneOffset(); // 分钟, 东八区为 +480
+  const sign = off >= 0 ? "+" : "-";
+  const abs = Math.abs(off);
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}${sign}${p(Math.floor(abs / 60))}:${p(abs % 60)}`;
+}
 /** 24 小时制时间 +1 小时 */
 function plus1h(v) {
   const d = parseLocalDT(v);
@@ -245,8 +254,8 @@ function initForm() {
     const body = {
       host: form.dataset.host,
       cards: form.elements.cards.value.trim() || "all",
-      start: form.elements.start.value.trim().replace(" ", "T"),
-      end: form.elements.end.value.trim().replace(" ", "T"),
+      start: toOffsetISO(parseLocalDT(form.elements.start.value)),
+      end: toOffsetISO(parseLocalDT(form.elements.end.value)),
       owner: form.elements.owner.value.trim(),
     };
     msg.className = "form-msg";

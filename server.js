@@ -80,9 +80,11 @@ function parseNpuTable(text) {
 
 // ---------------------------------------------------------------- NPU 状态采集
 
+const RETRY_LIMIT = 3; // 连续失败次数达到该值才标记断连, 期间保留上次成功状态
+
 const status = {};
 for (const name of Object.keys(HOSTS)) {
-  status[name] = { connected: false, error: null, chips: [], raw: "", updated_at: null };
+  status[name] = { connected: false, error: null, chips: [], raw: "", updated_at: null, consecutive_failures: 0 };
 }
 
 function pollHost(name) {
@@ -95,7 +97,17 @@ function pollHost(name) {
       settled = true;
       clearTimeout(timer);
       try { conn.end(); } catch (_) { /* ignore */ }
-      status[name] = { ...result, updated_at: nowIso() };
+      const prev = status[name];
+      if (result.connected) {
+        status[name] = { ...result, updated_at: nowIso(), consecutive_failures: 0 };
+      } else {
+        const fails = (prev.consecutive_failures || 0) + 1;
+        if (fails >= RETRY_LIMIT) {
+          status[name] = { ...result, updated_at: nowIso(), consecutive_failures: fails };
+        } else {
+          status[name] = { ...prev, consecutive_failures: fails };
+        }
+      }
       resolve();
     };
     const timer = setTimeout(() => done({ connected: false, error: "连接超时", chips: [], raw: "" }), 12000);
