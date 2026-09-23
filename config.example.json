@@ -1,0 +1,13 @@
+{
+  "_说明": "复制为 config.json 后填写真实值。hosts 中每个条目为一台 NPU 宿主机。认证方式二选一: 填 password 或 key_path(私钥路径)。command 可选, 默认 npu-smi info -t 5; 对于键值输出格式的 npu-smi, 建议使用 scripts/npu-monitor.sh (需先安装到目标主机 /usr/local/bin/npu-monitor.sh)。",
+  "hosts": [
+    {
+      "name": "npu-01",
+      "host": "x.x.x.x",
+      "port": 22,
+      "username": "root",
+      "password": "your-password-here",
+      "command": "/usr/local/bin/npu-monitor.sh"
+    }
+  ]
+}
