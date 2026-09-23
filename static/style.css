@@ -35,7 +35,7 @@
   /* Didone 展示体: 大标题镂空用 */
   --serif: "Bodoni Moda", "Didot", "Bodoni MT", "Playfair Display", "Times New Roman", "Songti SC", "SimSun", serif;
   /* 等宽: 标签 / 数据 / 小字 */
-  --mono: "Cascadia Code", "Cascadia Mono", ui-monospace, Consolas, monospace;
+  --mono: Consolas, "Cascadia Code", "Cascadia Mono", ui-monospace, monospace;
   --sans: var(--mono);
 }
 
@@ -185,7 +185,7 @@ main { position: relative; padding: 28px 32px 64px; }
   padding: 6px 10px;
   border: 1px dashed var(--line);
   border-radius: 0;
-  font-size: 12px;
+  font-size: 16px;
   color: var(--muted);
   min-height: 30px;
   cursor: text;
