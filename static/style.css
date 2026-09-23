@@ -186,6 +186,7 @@ main { position: relative; padding: 28px 32px 64px; }
   border: 1px dashed var(--line);
   border-radius: 0;
   font-size: 16px;
+  font-weight: 700;
   color: var(--muted);
   min-height: 30px;
   cursor: text;
@@ -459,7 +460,7 @@ footer .dots-lg { --dot-c: oklch(0.58 0.12 300); }
 .big-clock {
   position: relative;
   z-index: 1;
-  font-family: var(--mono);
+  font-family: "Times New Roman", "Bodoni MT", "Didot", "Playfair Display", serif;
   font-size: clamp(80px, 18vw, 220px);
   font-weight: 900;
   line-height: 1;
