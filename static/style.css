@@ -35,7 +35,7 @@
   /* Didone 展示体: 大标题镂空用 */
   --serif: "Bodoni Moda", "Didot", "Bodoni MT", "Playfair Display", "Times New Roman", "Songti SC", "SimSun", serif;
   /* 等宽: 标签 / 数据 / 小字 */
-  --mono: Consolas, "Cascadia Code", "Cascadia Mono", ui-monospace, monospace;
+  --mono: "Cascadia Mono", "Cascadia Code", Consolas, ui-monospace, monospace;
   --sans: var(--mono);
 }
 
@@ -67,7 +67,7 @@ header {
 }
 header h1 {
   margin: 0;
-  font-family: "Playfair Display", "Bodoni Moda", "Didot", "Bodoni MT", "Times New Roman", serif;
+  font-family: var(--mono);
   font-size: 58px;
   font-weight: 900;
   letter-spacing: 0.01em;
@@ -157,7 +157,7 @@ main { position: relative; padding: 28px 32px 64px; }
   border-bottom: 1px solid var(--line);
 }
 .host-name {
-  font-family: var(--serif);
+  font-family: var(--mono);
   font-weight: 700;
   font-size: 24px;
   letter-spacing: 0.03em;
@@ -261,7 +261,7 @@ main { position: relative; padding: 28px 32px 64px; }
   margin-top: 14px;
   padding-top: 10px;
   border-top: 1px solid var(--line);
-  font-family: var(--serif);
+  font-family: var(--mono);
   font-size: 17px;
   font-weight: 700;
   letter-spacing: 0.05em;
@@ -459,7 +459,7 @@ footer .dots-lg { --dot-c: oklch(0.58 0.12 300); }
 .big-clock {
   position: relative;
   z-index: 1;
-  font-family: "Playfair Display", "Bodoni Moda", "Didot", serif;
+  font-family: var(--mono);
   font-size: clamp(80px, 18vw, 220px);
   font-weight: 900;
   line-height: 1;
