@@ -25,9 +25,7 @@ for (const h of CONFIG.hosts || []) HOSTS[h.name] = h;
 // ---------------------------------------------------------------- 工具函数
 
 function nowIso() {
-  const d = new Date();
-  const p = (n) => String(n).padStart(2, "0");
-  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
+  return new Date().toISOString();
 }
 
 function isValidLocalDT(s) {
