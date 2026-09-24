@@ -29,9 +29,11 @@
   --c-core-deep: oklch(0.46 0.15 210);
   --c-hbm: oklch(0.56 0.18 285);    /* HBM 紫罗兰 */
   --c-hbm-deep: oklch(0.44 0.16 285);
-  --c-model: oklch(0.50 0.19 335);  /* 模型名 洋红 */
-  --c-announce: oklch(0.52 0.18 60); /* 公告 琥珀 */
-  --c-active: oklch(0.56 0.18 25);  /* 排队占用 朱红 */
+  --c-model: oklch(0.40 0.11 155);  /* 模型名 深绿 */
+  --c-announce: oklch(0.56 0.18 25); /* 公告 朱红 */
+  --c-active: oklch(0.48 0.13 155);  /* 排队占用 绿主色 */
+  --c-active-deep: oklch(0.36 0.11 155); /* 排队占用 深绿 */
+  --c-active-soft: oklch(0.93 0.05 155); /* 排队占用 浅绿底 */
 
   /* ---- 语义状态色: 独立于编码色相, 语义不混淆 ---- */
   --red: oklch(0.55 0.19 27);
@@ -184,7 +186,7 @@ main { position: relative; padding: 28px 32px 64px; }
 .announce {
   margin: 0 0 10px;
   padding: 6px 10px;
-  border: 1px dashed oklch(0.78 0.10 60);
+  border: 1px dashed oklch(0.80 0.12 25);
   border-radius: 0;
   font-size: 21px;
   font-weight: 700;
@@ -292,7 +294,7 @@ main { position: relative; padding: 28px 32px 64px; }
   font-size: 17px;
   font-weight: 700;
   letter-spacing: 0.05em;
-  color: var(--c-active);
+  color: var(--c-active-deep);
 }
 
 .queue-list { list-style: none; margin: 8px 0 0; padding: 0; }
@@ -309,10 +311,11 @@ main { position: relative; padding: 28px 32px 64px; }
 .queue-list li:not(.active) {
   background: var(--idle-bg);
   color: var(--muted);
+  border-color: transparent;
 }
 .queue-list li.active {
   background: var(--c-active);
-  border-color: var(--c-active);
+  border-color: var(--c-active-deep);
   color: #fff;
 }
 
@@ -338,7 +341,7 @@ main { position: relative; padding: 28px 32px 64px; }
   letter-spacing: 0.14em;
   text-transform: uppercase;
   background: #fff;
-  color: var(--c-active);
+  color: var(--c-active-deep);
   border-radius: 0;
   padding: 2px 7px;
 }
