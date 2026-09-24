@@ -182,7 +182,8 @@ function parseModels(text) {
     if (!mp) continue;
     const cid = cgMap[pid];
     const container = (cid && dcMap[cid.slice(0, 12)]) || "宿主";
-    models.push({ model: mp[1].split("/").pop(), container, pid: parseInt(pid, 10), uptime: etime });
+    const model = mp[1].replace(/\/+$/, "").split("/").pop();
+    models.push({ model, container, pid: parseInt(pid, 10), uptime: etime });
   }
   return { models };
 }
@@ -204,7 +205,7 @@ function pollModels(name) {
     const cmd = [
       'echo "@PS"; ps -eo pid,etime,args | grep "sglang.launch_server" | grep -v grep',
       'echo "@DC"; docker ps --format "{{.Names}}|{{.ID}}"',
-      'echo "@CG"; for p in $(pgrep -f "sglang.launch_server"); do echo "$p $(grep -o "docker-[0-9a-f]*" /proc/$p/cgroup 2>/dev/null | head -1 | cut -d- -f2)"; done',
+      'echo "@CG"; for p in $(pgrep -f "sglang.launch_server"); do echo "$p $(grep -oE "docker[-/][0-9a-f]{12,}" /proc/$p/cgroup 2>/dev/null | head -1 | cut -c 8-)"; done',
     ].join("; ");
     conn
       .on("ready", () => {

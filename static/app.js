@@ -56,8 +56,11 @@ function statusHTML(s) {
           <div class="model-title">运行模型</div>
           ${(s.models || []).map((m) => `
           <div class="model-item" title="${esc(m.model)}">
-            <span class="model-name">${esc(m.model)}</span>
-            <span class="model-meta">${esc(m.container)} · PID ${m.pid} · ${esc(m.uptime)}</span>
+            <div class="model-row1">
+              <span class="model-name">${esc(m.model)}</span>
+              <span class="model-cont">${esc(m.container)}</span>
+            </div>
+            <div class="model-row2">PID ${m.pid} · ${esc(m.uptime)}</div>
           </div>`).join("")}
         </div>`
       : "";
