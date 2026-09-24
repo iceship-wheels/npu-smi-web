@@ -92,7 +92,7 @@ header h1 {
   white-space: nowrap;
 }
 
-main { position: relative; padding: 28px 32px 64px; }
+main { position: relative; padding: 28px 32px 16px; }
 
 .hint {
   position: relative;
@@ -439,7 +439,7 @@ main { position: relative; padding: 28px 32px 64px; }
 footer {
   position: relative;
   text-align: center;
-  padding: 10px 0 200px;
+  padding: 2px 0 200px;
   overflow: hidden;
 }
 /* 渐变点阵: 从上到下由细到粗、由疏到密, 六色相轮转 */
