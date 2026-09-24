@@ -186,7 +186,7 @@ main { position: relative; padding: 28px 32px 64px; }
   padding: 6px 10px;
   border: 1px dashed oklch(0.78 0.10 60);
   border-radius: 0;
-  font-size: 16px;
+  font-size: 21px;
   font-weight: 700;
   color: var(--c-announce);
   min-height: 30px;
@@ -259,14 +259,8 @@ main { position: relative; padding: 28px 32px 64px; }
   font-size: 14px;
   line-height: 1.55;
 }
-.model-row1 {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 10px;
-}
 .model-name { color: var(--c-model); font-weight: 700; overflow-wrap: anywhere; }
-.model-cont { color: var(--muted); white-space: nowrap; }
+.model-cont { color: var(--muted); font-weight: 500; }
 .model-row2 { color: var(--muted); font-size: 12px; }
 
 .progress {
