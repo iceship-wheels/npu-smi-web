@@ -31,9 +31,9 @@
   --c-hbm-deep: oklch(0.44 0.16 285);
   --c-model: oklch(0.40 0.11 155);  /* 模型名 深绿 */
   --c-announce: oklch(0.56 0.18 25); /* 公告 朱红 */
-  --c-active: oklch(0.48 0.13 155);  /* 排队占用 绿主色 */
-  --c-active-deep: oklch(0.36 0.11 155); /* 排队占用 深绿 */
-  --c-active-soft: oklch(0.93 0.05 155); /* 排队占用 浅绿底 */
+  --c-active: oklch(0.55 0.16 60);   /* 排队占用 橙主色 */
+  --c-active-deep: oklch(0.42 0.13 55); /* 排队占用 深橙 */
+  --c-active-soft: oklch(0.945 0.05 75); /* 排队占用 浅橙底 */
 
   /* ---- 语义状态色: 独立于编码色相, 语义不混淆 ---- */
   --red: oklch(0.55 0.19 27);
@@ -306,6 +306,7 @@ main { position: relative; padding: 28px 32px 64px; }
   border-radius: 0;
   font-size: 12px;
   border: 1px solid transparent;
+  border-left-width: 4px;
 }
 .queue-list li + li { margin-top: 6px; }
 .queue-list li:not(.active) {
@@ -314,9 +315,11 @@ main { position: relative; padding: 28px 32px 64px; }
   border-color: transparent;
 }
 .queue-list li.active {
-  background: var(--c-active);
-  border-color: var(--c-active-deep);
-  color: #fff;
+  background: var(--c-active-soft);
+  border-color: var(--c-active);
+  border-left-color: var(--c-active-deep);
+  color: var(--c-active-deep);
+  font-weight: 600;
 }
 
 .q-body { flex: 1; min-width: 0; }
@@ -340,8 +343,8 @@ main { position: relative; padding: 28px 32px 64px; }
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  background: #fff;
-  color: var(--c-active-deep);
+  background: var(--c-active-deep);
+  color: #fff;
   border-radius: 0;
   padding: 2px 7px;
 }
