@@ -187,7 +187,7 @@ main { position: relative; padding: 28px 32px 64px; }
   border-radius: 0;
   font-size: 16px;
   font-weight: 700;
-  color: var(--muted);
+  color: oklch(0.42 0.12 var(--accent-h));
   min-height: 30px;
   cursor: text;
   overflow-wrap: break-word;
