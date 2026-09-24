@@ -29,8 +29,8 @@
   --c-core-deep: oklch(0.46 0.15 210);
   --c-hbm: oklch(0.56 0.18 285);    /* HBM 紫罗兰 */
   --c-hbm-deep: oklch(0.44 0.16 285);
-  --c-model: oklch(0.40 0.11 155);  /* 模型名 深绿 */
-  --c-announce: oklch(0.56 0.18 25); /* 公告 朱红 */
+  --c-model: oklch(0.50 0.12 155);  /* 模型名 浅绿 */
+  --c-announce: oklch(0.56 0.21 25); /* 公告 朱红(高饱和) */
   --c-active: oklch(0.55 0.16 60);   /* 排队占用 橙主色 */
   --c-active-deep: oklch(0.42 0.13 55); /* 排队占用 深橙 */
   --c-active-soft: oklch(0.945 0.05 75); /* 排队占用 浅橙底 */
@@ -186,7 +186,7 @@ main { position: relative; padding: 28px 32px 64px; }
 .announce {
   margin: 0 0 10px;
   padding: 6px 10px;
-  border: 1px dashed oklch(0.80 0.12 25);
+  border: 1px dashed oklch(0.80 0.14 25);
   border-radius: 0;
   font-size: 21px;
   font-weight: 700;
