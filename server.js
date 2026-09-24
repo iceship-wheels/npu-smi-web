@@ -78,7 +78,7 @@ function parseNpuTable(text) {
 
 // ---------------------------------------------------------------- NPU 状态采集
 
-const RETRY_LIMIT = 3; // 连续失败次数达到该值才标记断连, 期间保留上次成功状态
+const RETRY_LIMIT = 5; // 连续失败(断连/解析失败)次数达到该值才标记为不可用, 期间保留上次成功状态
 
 const status = {};
 for (const name of Object.keys(HOSTS)) {
@@ -96,7 +96,8 @@ function pollHost(name) {
       clearTimeout(timer);
       try { conn.end(); } catch (_) { /* ignore */ }
       const prev = status[name];
-      if (result.connected) {
+      const ok = result.connected && (result.chips?.length || 0) > 0;
+      if (ok) {
         status[name] = { ...result, updated_at: nowIso(), consecutive_failures: 0 };
       } else {
         const fails = (prev.consecutive_failures || 0) + 1;
