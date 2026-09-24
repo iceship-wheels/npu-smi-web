@@ -17,6 +17,7 @@ const QUEUE_FILE = path.join(DATA_DIR, "queue.json");
 const ANN_FILE = path.join(DATA_DIR, "announcements.json");
 
 const POLL_INTERVAL = 5 * 1000; // NPU 状态轮询间隔
+const MODELS_INTERVAL = 30 * 1000; // 运行模型采集间隔
 const MAX_FUTURE_DAYS = 7;      // 只能排未来一周
 
 const HOSTS = {};
@@ -82,7 +83,7 @@ const RETRY_LIMIT = 5; // 连续失败(断连/解析失败)次数达到该值才
 
 const status = {};
 for (const name of Object.keys(HOSTS)) {
-  status[name] = { connected: false, error: null, chips: [], raw: "", updated_at: null, consecutive_failures: 0 };
+  status[name] = { connected: false, error: null, chips: [], raw: "", updated_at: null, consecutive_failures: 0, models: [] };
 }
 
 function pollHost(name) {
@@ -98,7 +99,7 @@ function pollHost(name) {
       const prev = status[name];
       const ok = result.connected && (result.chips?.length || 0) > 0;
       if (ok) {
-        status[name] = { ...result, updated_at: nowIso(), consecutive_failures: 0 };
+        status[name] = { ...result, updated_at: nowIso(), consecutive_failures: 0, models: status[name].models };
       } else {
         const fails = (prev.consecutive_failures || 0) + 1;
         if (fails >= RETRY_LIMIT) {
@@ -142,6 +143,97 @@ function pollAll() {
 }
 pollAll();
 setInterval(pollAll, POLL_INTERVAL);
+
+// ---------------------------------------------------------------- 运行模型采集
+
+/**
+ * 解析模型采集输出, 提取每个推理服务的 模型名/容器名/PID/运行时长.
+ * 采集命令分段输出:
+ *   @PS   ps -eo pid,etime,args | grep sglang.launch_server
+ *   @DC   docker ps --format "{{.Names}}|{{.ID}}"
+ *   @CG   <pid> <容器ID>  (从 /proc/<pid>/cgroup 提取)
+ */
+function parseModels(text) {
+  const psLines = [], dcLines = [], cgLines = [];
+  let cur = null;
+  for (const line of String(text || "").split("\n")) {
+    const t = line.trim();
+    if (t === "@PS") cur = psLines;
+    else if (t === "@DC") cur = dcLines;
+    else if (t === "@CG") cur = cgLines;
+    else if (cur && t) cur.push(t);
+  }
+  const dcMap = {};
+  for (const l of dcLines) {
+    const idx = l.indexOf("|");
+    if (idx > 0) dcMap[l.slice(idx + 1).trim().slice(0, 12).toLowerCase()] = l.slice(0, idx).trim();
+  }
+  const cgMap = {};
+  for (const l of cgLines) {
+    const m = l.match(/^(\d+)\s+([0-9a-f]{6,64})$/i);
+    if (m) cgMap[m[1]] = m[2].toLowerCase();
+  }
+  const models = [];
+  for (const l of psLines) {
+    const m = l.match(/^(\d+)\s+(\S+)\s+(.*)$/);
+    if (!m) continue;
+    const pid = m[1], etime = m[2], args = m[3];
+    const mp = args.match(/--model-path\s+(\S+)/);
+    if (!mp) continue;
+    const cid = cgMap[pid];
+    const container = (cid && dcMap[cid.slice(0, 12)]) || "宿主";
+    models.push({ model: mp[1].split("/").pop(), container, pid: parseInt(pid, 10), uptime: etime });
+  }
+  return { models };
+}
+
+function pollModels(name) {
+  const cfg = HOSTS[name];
+  return new Promise((resolve) => {
+    let settled = false;
+    const conn = new Client();
+    const done = (result) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      try { conn.end(); } catch (_) { /* ignore */ }
+      status[name] = { ...status[name], ...result };
+      resolve();
+    };
+    const timer = setTimeout(() => done({}), 15000);
+    const cmd = [
+      'echo "@PS"; ps -eo pid,etime,args | grep "sglang.launch_server" | grep -v grep',
+      'echo "@DC"; docker ps --format "{{.Names}}|{{.ID}}"',
+      'echo "@CG"; for p in $(pgrep -f "sglang.launch_server"); do echo "$p $(grep -o "docker-[0-9a-f]*" /proc/$p/cgroup 2>/dev/null | head -1 | cut -d- -f2)"; done',
+    ].join("; ");
+    conn
+      .on("ready", () => {
+        conn.exec(cmd, (err, stream) => {
+          if (err) return done({});
+          let out = "";
+          stream.on("data", (d) => (out += d.toString("utf-8")));
+          stream.stderr.on("data", () => {});
+          stream.on("close", () => done(parseModels(out)));
+        });
+      })
+      .on("error", () => done({}))
+      .connect({
+        host: cfg.host,
+        port: cfg.port || 22,
+        username: cfg.username,
+        readyTimeout: 8000,
+        ...(cfg.key_path
+          ? { privateKey: fs.readFileSync(cfg.key_path) }
+          : { password: cfg.password || "" }),
+      });
+  });
+}
+
+function pollModelsAll() {
+  Promise.all(Object.keys(HOSTS).map(pollModels)).catch(() => { /* 单机失败保留上次结果 */ });
+}
+pollModelsAll();
+setInterval(pollModelsAll, MODELS_INTERVAL);
 
 // ---------------------------------------------------------------- 排队占用管理
 
@@ -241,6 +333,7 @@ app.get("/api/hosts", (_req, res) => {
       chips: s.chips,
       updated_at: s.updated_at,
       raw: s.connected && !s.error ? "" : String(s.raw || "").slice(-2000),
+      models: s.models || [],
     };
   }
   res.json({ now: nowIso(), hosts });

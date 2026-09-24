@@ -51,9 +51,20 @@ function statusHTML(s) {
         <td class="usage-cell">${hbmCell}</td>
       </tr>`;
     }).join("");
+    const modelBlock = (s.models || []).length
+      ? `<div class="model-box">
+          <div class="model-title">运行模型</div>
+          ${(s.models || []).map((m) => `
+          <div class="model-item" title="${esc(m.model)}">
+            <span class="model-name">${esc(m.model)}</span>
+            <span class="model-meta">${esc(m.container)} · PID ${m.pid} · ${esc(m.uptime)}</span>
+          </div>`).join("")}
+        </div>`
+      : "";
     return `<table class="chip-table">
         <tr><th>卡</th><th>AI Core</th><th>HBM</th></tr>${rows}
       </table>
+      ${modelBlock}
       <div class="host-updated">更新于 ${s.updated_at ? fmtDT(s.updated_at) : "-"}</div>`;
   }
   if (s && s.connected) {
