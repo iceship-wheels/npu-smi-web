@@ -23,10 +23,10 @@ function esc(s) {
   return String(s).replace(/[&<>"']/g, (c) =>
     ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 }
-function bar(pct, warn = 50, high = 85) {
+function bar(pct, warn = 50, high = 85, kind = "") {
   const p = Math.max(0, Math.min(100, pct));
   const cls = p >= high ? "high" : p >= warn ? "warn" : "";
-  return `<span class="progress ${cls}"><div style="width:${p}%"></div></span> ${p.toFixed(0)}%`;
+  return `<span class="progress ${kind} ${cls}"><div style="width:${p}%"></div></span> ${p.toFixed(0)}%`;
 }
 
 /* ---------------- 状态 ---------------- */
@@ -44,10 +44,10 @@ function statusHTML(s) {
       const hbmPct = c.hbm_total ? (c.hbm_used / c.hbm_total) * 100 : null;
       const hbmCell = hbmPct === null
         ? `${c.hbm_used ?? "-"} MB`
-        : `${bar(hbmPct)} <span class="usage-label">(${c.hbm_used}/${c.hbm_total} MB)</span>`;
+        : `${bar(hbmPct, 50, 85, "hbm")} <span class="usage-label">(${c.hbm_used}/${c.hbm_total} MB)</span>`;
       return `<tr>
         <td>NPU ${c.id}</td>
-        <td class="usage-cell">${bar(c.aicore ?? 0)}</td>
+        <td class="usage-cell">${bar(c.aicore ?? 0, 50, 85, "core")}</td>
         <td class="usage-cell">${hbmCell}</td>
       </tr>`;
     }).join("");
@@ -101,9 +101,9 @@ function queueHTML(name) {
 }
 
 /** 卡片骨架 (含底部表单, 只在设备列表变化时重建, 避免刷新打断输入) */
-function hostCardShell(name, idx) {
+function hostCardShell(name) {
   const now = new Date();
-  return `<div class="host-card tone-${idx % 6}" data-host="${esc(name)}">
+  return `<div class="host-card" data-host="${esc(name)}">
     <div class="host-head"><span class="host-name">${esc(name)}</span><span class="badge-slot"></span></div>
     <div class="announce" title="双击编辑公告" data-host="${esc(name)}"></div>
     <div class="status-box"></div>
@@ -154,7 +154,7 @@ function updateCards() {
 /** 设备列表变化时整体重建 */
 function renderHosts() {
   const box = $("#hosts");
-  box.innerHTML = hostNames.map((name, idx) => hostCardShell(name, idx)).join("");
+  box.innerHTML = hostNames.map((name) => hostCardShell(name)).join("");
   // 开始时间变化时, 结束时间自动 = 开始时间 + 1 小时;
   // 结束时间改到不晚于开始/当前时间时, 视为跨天: 结束日期自动 +1 天(开始时间不变)
   box.querySelectorAll(".resv-form").forEach((form) => {

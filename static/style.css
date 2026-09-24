@@ -1,8 +1,8 @@
-/* 集群监控协调平台 - Haute Couture Editorial × 多色相编码
- * 色彩科学: OKLCH 感知均匀空间. 暖纸底 + 墨蓝骨架;
- * 6 个感知等距编码色相(绛红/赭金/松绿/黛青/紫藤/洋红)按宿主机序号循环,
- * chroma 压至 0.09~0.13 保持低饱和编辑质感; 亮色相自动加深保证对比度.
- * --accent 系列随卡片色相切换, 全站组件自适应.
+/* 集群监控协调平台 - 卡片统一配色 + 内部高饱和多色
+ * 色彩科学: OKLCH 感知均匀空间. 暖纸底 + 墨蓝骨架.
+ * 所有卡片共用一套主色相; 卡片内部元素(AI Core/HBM/模型/公告/排队)
+ * 各用独立高饱和色相, 视觉区分明显.
+ * --accent 系列为主色, 卡片内部用 --c-* 系列.
  */
 :root {
   /* ---- 中性骨架: 暖纸底 (OKLCH H≈90 暖黄轴, C 极低) ---- */
@@ -17,12 +17,21 @@
   --muted: oklch(0.52 0.05 265);
   --faint: oklch(0.72 0.03 265);
 
-  /* ---- 卡片编码色相默认值 (卡 1 = 绛红), JS 按序号覆盖 ---- */
-  --accent-h: 25;
-  --accent: oklch(0.52 0.13 var(--accent-h));
-  --accent-deep: oklch(0.42 0.115 var(--accent-h));
-  --accent-soft: oklch(0.955 0.02 var(--accent-h));
-  --accent-ink: oklch(0.52 0.13 var(--accent-h));
+  /* ---- 卡片主色 (全站统一): 靛蓝 ---- */
+  --accent-h: 245;
+  --accent: oklch(0.55 0.17 var(--accent-h));
+  --accent-deep: oklch(0.44 0.15 var(--accent-h));
+  --accent-soft: oklch(0.95 0.03 var(--accent-h));
+  --accent-ink: oklch(0.52 0.17 var(--accent-h));
+
+  /* ---- 卡片内部元素色: 高饱和独立色相 ---- */
+  --c-core: oklch(0.58 0.17 210);   /* AI Core 天蓝 */
+  --c-core-deep: oklch(0.46 0.15 210);
+  --c-hbm: oklch(0.56 0.18 285);    /* HBM 紫罗兰 */
+  --c-hbm-deep: oklch(0.44 0.16 285);
+  --c-model: oklch(0.50 0.19 335);  /* 模型名 洋红 */
+  --c-announce: oklch(0.52 0.18 60); /* 公告 琥珀 */
+  --c-active: oklch(0.56 0.18 25);  /* 排队占用 朱红 */
 
   /* ---- 语义状态色: 独立于编码色相, 语义不混淆 ---- */
   --red: oklch(0.55 0.19 27);
@@ -38,14 +47,6 @@
   --mono: "Cascadia Mono", "Cascadia Code", Consolas, ui-monospace, monospace;
   --sans: var(--mono);
 }
-
-/* ---- 编码色相: OKLCH H 轴感知等距取点, 亮色相降 L 保对比 ---- */
-.tone-0 { --accent-h: 25;  }  /* 绛红 vermilion */
-.tone-1 { --accent-h: 70;  --accent-deep: oklch(0.40 0.09 70); }  /* 赭金 ochre: 亮色相, deep 加深 */
-.tone-2 { --accent-h: 150; }  /* 松绿 pine */
-.tone-3 { --accent-h: 200; }  /* 黛青 slate-teal */
-.tone-4 { --accent-h: 300; --accent-deep: oklch(0.38 0.09 300); }  /* 紫藤 wisteria */
-.tone-5 { --accent-h: 340; }  /* 洋红 magenta */
 
 * { box-sizing: border-box; }
 
@@ -133,7 +134,7 @@ main { position: relative; padding: 28px 32px 64px; }
 .host-card:nth-child(4) { animation-delay: 0.23s; }
 .host-card:nth-child(5) { animation-delay: 0.29s; }
 .host-card:nth-child(6) { animation-delay: 0.35s; }
-.host-card:hover { border-color: var(--accent); box-shadow: 0 2px 14px oklch(0.52 0.13 var(--accent-h) / 0.13); }
+.host-card:hover { border-color: var(--accent); box-shadow: 0 2px 14px oklch(0.52 0.17 var(--accent-h) / 0.14); }
 .host-card.offline { border-top-color: var(--faint); }
 
 /* ---- 选中态: 加粗边框 ---- */
@@ -183,11 +184,11 @@ main { position: relative; padding: 28px 32px 64px; }
 .announce {
   margin: 0 0 10px;
   padding: 6px 10px;
-  border: 1px dashed var(--line);
+  border: 1px dashed oklch(0.78 0.10 60);
   border-radius: 0;
   font-size: 16px;
   font-weight: 700;
-  color: oklch(0.42 0.12 var(--accent-h));
+  color: var(--c-announce);
   min-height: 30px;
   cursor: text;
   overflow-wrap: break-word;
@@ -264,7 +265,7 @@ main { position: relative; padding: 28px 32px 64px; }
   align-items: baseline;
   gap: 10px;
 }
-.model-name { color: oklch(0.42 0.12 var(--accent-h)); font-weight: 700; overflow-wrap: anywhere; }
+.model-name { color: var(--c-model); font-weight: 700; overflow-wrap: anywhere; }
 .model-cont { color: var(--muted); white-space: nowrap; }
 .model-row2 { color: var(--muted); font-size: 12px; }
 
@@ -283,6 +284,8 @@ main { position: relative; padding: 28px 32px 64px; }
   border-radius: 0;
   transition: width 0.4s;
 }
+.progress.core > div { background: var(--c-core); }
+.progress.hbm > div { background: var(--c-hbm); }
 .progress.warn > div { background: var(--warn); }
 .progress.high > div { background: var(--red); }
 
@@ -295,7 +298,7 @@ main { position: relative; padding: 28px 32px 64px; }
   font-size: 17px;
   font-weight: 700;
   letter-spacing: 0.05em;
-  color: var(--accent-deep);
+  color: var(--c-active);
 }
 
 .queue-list { list-style: none; margin: 8px 0 0; padding: 0; }
@@ -314,8 +317,8 @@ main { position: relative; padding: 28px 32px 64px; }
   color: var(--muted);
 }
 .queue-list li.active {
-  background: var(--accent);
-  border-color: var(--accent-deep);
+  background: var(--c-active);
+  border-color: var(--c-active);
   color: #fff;
 }
 
@@ -341,7 +344,7 @@ main { position: relative; padding: 28px 32px 64px; }
   letter-spacing: 0.14em;
   text-transform: uppercase;
   background: #fff;
-  color: var(--accent-deep);
+  color: var(--c-active);
   border-radius: 0;
   padding: 2px 7px;
 }
