@@ -67,6 +67,7 @@ header {
   gap: 20px;
   padding: 26px 32px 0;
   background: var(--paper);
+  flex-wrap: wrap;
 }
 header h1 {
   margin: 0;
@@ -439,7 +440,7 @@ main { position: relative; padding: 28px 32px 16px; }
 footer {
   position: relative;
   text-align: center;
-  padding: 2px 0 200px;
+  padding: 2px 0 40px;
   overflow: hidden;
 }
 /* 渐变点阵: 从上到下由细到粗、由疏到密, 六色相轮转 */
@@ -490,15 +491,13 @@ footer .dots-sm { --dot-c: oklch(0.60 0.12 25); }
 footer .dots-md { --dot-c: oklch(0.60 0.11 150); }
 footer .dots-lg { --dot-c: oklch(0.58 0.12 300); }
 .big-clock {
-  position: relative;
-  z-index: 1;
+  margin-left: auto;
   font-family: "Times New Roman", "Bodoni MT", "Didot", "Playfair Display", serif;
-  font-size: clamp(80px, 18vw, 220px);
+  font-size: 30px;
   font-weight: 900;
   line-height: 1;
-  color: transparent;
-  -webkit-text-stroke: 4px var(--ink);
+  color: var(--ink);
   letter-spacing: 0.02em;
   user-select: none;
-  pointer-events: none;
+  white-space: nowrap;
 }
