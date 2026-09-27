@@ -436,67 +436,14 @@ main { position: relative; padding: 28px 32px 16px; }
   header h1, .host-card { animation: none; }
 }
 
-/* ---- 底部巨大时钟 + 六色点阵 ---- */
-footer {
-  position: relative;
-  text-align: center;
-  padding: 2px 0 40px;
-  overflow: hidden;
-}
-/* 渐变点阵: 从上到下由细到粗、由疏到密, 六色相轮转 */
-footer .dot-grid {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  pointer-events: none;
-  z-index: 0;
-}
-footer .dot-grid .dots {
-  position: absolute;
-  left: 0;
-  right: 0;
-}
-footer .dots-sm {
-  top: 0;
-  height: 50%;
-  background-image: radial-gradient(circle, var(--dot-c, oklch(0.52 0.13 25)) 0.6px, transparent 0.6px);
-  background-size: 16px 16px;
-  opacity: 0.25;
-  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 60%, transparent 100%);
-  mask-image: linear-gradient(to bottom, #000 0%, #000 60%, transparent 100%);
-}
-footer .dots-md {
-  top: 25%;
-  height: 45%;
-  background-image: radial-gradient(circle, var(--dot-c, oklch(0.50 0.10 200)) 1.4px, transparent 1.4px);
-  background-size: 22px 22px;
-  background-position: 8px 11px;
-  opacity: 0.35;
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 40%, #000 70%, transparent 100%);
-  mask-image: linear-gradient(to bottom, transparent 0%, #000 40%, #000 70%, transparent 100%);
-}
-footer .dots-lg {
-  top: 50%;
-  bottom: 0;
-  background-image: radial-gradient(circle, var(--dot-c, oklch(0.48 0.11 300)) 2.5px, transparent 2.5px);
-  background-size: 30px 30px;
-  background-position: 4px 15px;
-  opacity: 0.4;
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 50%, #000 100%);
-  mask-image: linear-gradient(to bottom, transparent 0%, #000 50%, #000 100%);
-}
-footer .dots-sm { --dot-c: oklch(0.60 0.12 25); }
-footer .dots-md { --dot-c: oklch(0.60 0.11 150); }
-footer .dots-lg { --dot-c: oklch(0.58 0.12 300); }
 .big-clock {
   margin-left: auto;
   font-family: "Times New Roman", "Bodoni MT", "Didot", "Playfair Display", serif;
-  font-size: 30px;
+  font-size: 50px;
   font-weight: 900;
   line-height: 1;
-  color: var(--ink);
+  color: transparent;
+  -webkit-text-stroke: 3px var(--ink);
   letter-spacing: 0.02em;
   user-select: none;
   white-space: nowrap;
