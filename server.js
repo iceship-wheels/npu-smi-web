@@ -149,7 +149,7 @@ setInterval(pollAll, POLL_INTERVAL);
 /**
  * 解析模型采集输出, 提取每个推理服务的 模型名/容器名/PID/运行时长.
  * 采集命令分段输出:
- *   @PS   ps -eo pid,etime,args | grep sglang.launch_server
+ *   @PS   ps -eo pid,etime,args | grep "sglang.launch_server" 或 "sglang serve"
  *   @DC   docker ps --format "{{.Names}}|{{.ID}}"
  *   @CG   <pid> <容器ID>  (从 /proc/<pid>/cgroup 提取)
  */
@@ -203,9 +203,9 @@ function pollModels(name) {
     };
     const timer = setTimeout(() => done({}), 15000);
     const cmd = [
-      'echo "@PS"; ps -eo pid,etime,args | grep "sglang.launch_server" | grep -v grep',
+      'echo "@PS"; ps -eo pid,etime,args | grep -E "sglang(\\.launch_server| serve)" | grep -v grep',
       'echo "@DC"; docker ps --format "{{.Names}}|{{.ID}}"',
-      'echo "@CG"; for p in $(pgrep -f "sglang.launch_server"); do echo "$p $(grep -oE "docker[-/][0-9a-f]{12,}" /proc/$p/cgroup 2>/dev/null | head -1 | cut -c 8-)"; done',
+      'echo "@CG"; for p in $(pgrep -f "sglang\\.launch_server|sglang serve"); do echo "$p $(grep -oE "docker[-/][0-9a-f]{12,}" /proc/$p/cgroup 2>/dev/null | head -1 | cut -c 8-)"; done',
     ].join("; ");
     conn
       .on("ready", () => {
