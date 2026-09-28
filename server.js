@@ -149,18 +149,21 @@ setInterval(pollAll, POLL_INTERVAL);
 /**
  * 解析模型采集输出, 提取每个推理服务的 模型名/容器名/PID/运行时长.
  * 采集命令分段输出:
- *   @PS   ps -eo pid,etime,args | grep "sglang.launch_server" 或 "sglang serve"
+ *   @PS   ps -eo pid,etime,args | grep "sglang.launch_server" 或 "sglang serve" (宿主进程)
  *   @DC   docker ps --format "{{.Names}}|{{.ID}}"
  *   @CG   <pid> <容器ID>  (从 /proc/<pid>/cgroup 提取)
+ *   @CT   docker top 容器内扫描: <容器内pid>\t<etime>\t<容器名>\t<args>
+ *         (用于容器 PID namespace 隔离, 宿主 ps 看不到容器内进程的场景)
  */
 function parseModels(text) {
-  const psLines = [], dcLines = [], cgLines = [];
+  const psLines = [], dcLines = [], cgLines = [], ctLines = [];
   let cur = null;
   for (const line of String(text || "").split("\n")) {
     const t = line.trim();
     if (t === "@PS") cur = psLines;
     else if (t === "@DC") cur = dcLines;
     else if (t === "@CG") cur = cgLines;
+    else if (t === "@CT") cur = ctLines;
     else if (cur && t) cur.push(t);
   }
   const dcMap = {};
@@ -174,16 +177,30 @@ function parseModels(text) {
     if (m) cgMap[m[1]] = m[2].toLowerCase();
   }
   const models = [];
+  const seen = new Set();
+  const push = (model, container, pid, uptime) => {
+    const key = model + "|" + container;
+    if (seen.has(key)) return;
+    seen.add(key);
+    models.push({ model: model.replace(/\/+$/, "").split("/").pop(), container, pid: parseInt(pid, 10), uptime });
+  };
   for (const l of psLines) {
     const m = l.match(/^(\d+)\s+(\S+)\s+(.*)$/);
     if (!m) continue;
     const pid = m[1], etime = m[2], args = m[3];
-    const mp = args.match(/--model-path\s+(\S+)/);
+    const mp = args.match(/--model(?:-path)?\s+(\S+)/);
     if (!mp) continue;
     const cid = cgMap[pid];
     const container = (cid && dcMap[cid.slice(0, 12)]) || "宿主";
-    const model = mp[1].replace(/\/+$/, "").split("/").pop();
-    models.push({ model, container, pid: parseInt(pid, 10), uptime: etime });
+    push(mp[1], container, pid, etime);
+  }
+  for (const l of ctLines) {
+    const parts = l.split("\t");
+    if (parts.length < 4) continue;
+    const pid = parts[0], etime = parts[1], container = parts[2], args = parts.slice(3).join(" ");
+    const mp = args.match(/--model(?:-path)?\s+(\S+)/);
+    if (!mp) continue;
+    push(mp[1], container, pid, etime);
   }
   return { models };
 }
@@ -206,6 +223,7 @@ function pollModels(name) {
       'echo "@PS"; ps -eo pid,etime,args | grep -E "sglang(\\.launch_server| serve)" | grep -v grep',
       'echo "@DC"; docker ps --format "{{.Names}}|{{.ID}}"',
       'echo "@CG"; for p in $(pgrep -f "sglang\\.launch_server|sglang serve"); do echo "$p $(grep -oE "docker[-/][0-9a-f]{12,}" /proc/$p/cgroup 2>/dev/null | head -1 | cut -c 8-)"; done',
+      'echo "@CT"; for c in $(docker ps --format "{{.Names}}"); do docker top "$c" -eo pid,etime,args 2>/dev/null | awk -v c="$c" \'NR>1 && ($0 ~ /sglang\\.launch_server/ || $0 ~ /sglang serve/) { pid=$1; et=$2; sub(/^[^ \\t]+[ \\t]+[^ \\t]+[ \\t]+/, ""); print pid"\\t"et"\\t"c"\\t"$0 }\'; done',
     ].join("; ");
     conn
       .on("ready", () => {
