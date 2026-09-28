@@ -29,6 +29,38 @@ function bar(pct, warn = 50, high = 85, kind = "") {
   return `<span class="progress ${kind} ${cls}"><div style="width:${p}%"></div></span> ${p.toFixed(0)}%`;
 }
 
+/** ps etime (SS / MM:SS / HH:MM:SS / D-HH:MM:SS) -> "已运行 1d 2h 3m" */
+function fmtUptime(t) {
+  let d = 0, h = 0, m = 0, s = 0;
+  const mt = String(t || "").trim().match(/^(?:(\d+)-)?(\d+):(\d+)(?::(\d+))?$/);
+  if (mt) {
+    d = parseInt(mt[1] || "0", 10);
+    h = parseInt(mt[2], 10);
+    m = parseInt(mt[3], 10);
+    s = parseInt(mt[4] || "0", 10);
+    if (!mt[1] && !mt[4]) {
+      // HH:MM 形式实际是 分:秒 (如 04:05)
+      m = parseInt(mt[2], 10);
+      s = parseInt(mt[3], 10);
+      h = 0;
+    }
+  } else if (/^\d+$/.test(String(t || "").trim())) {
+    s = parseInt(String(t).trim(), 10);
+  } else {
+    return String(t || "");
+  }
+  m += Math.floor(s / 60);
+  h += Math.floor(m / 60);
+  m %= 60;
+  d += Math.floor(h / 24);
+  h %= 24;
+  const parts = [];
+  if (d) parts.push(`${d}d`);
+  if (h) parts.push(`${h}h`);
+  parts.push(`${m}m`);
+  return `已运行 ${parts.join(" ")}`;
+}
+
 /* ---------------- 状态 ---------------- */
 let hostNames = [];   // 顺序固定, 用于渲染
 let hostStatus = {};  // name -> status
@@ -57,7 +89,7 @@ function statusHTML(s) {
           ${(s.models || []).map((m) => `
           <div class="model-item" title="${esc(m.model)}">
             <div class="model-name">${esc(m.model)}<span class="model-cont"> · ${esc(m.container)}</span></div>
-            <div class="model-row2">PID ${m.pid} · ${esc(m.uptime)}</div>
+            <div class="model-row2">PID ${m.pid} · ${esc(fmtUptime(m.uptime))}</div>
           </div>`).join("")}
         </div>`
       : "";

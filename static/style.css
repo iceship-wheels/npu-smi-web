@@ -438,7 +438,8 @@ main { position: relative; padding: 28px 32px 16px; }
 
 .big-clock {
   margin-left: auto;
-  font-family: "Times New Roman", "Bodoni MT", "Didot", "Playfair Display", serif;
+  padding-right: 8px;
+  font-family: var(--mono);
   font-size: 60px;
   font-weight: 900;
   line-height: 1;
