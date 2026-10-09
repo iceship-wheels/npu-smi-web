@@ -105,7 +105,7 @@ main { position: relative; padding: 28px 32px 16px; }
   color: var(--muted);
 }
 
-/* ---- 卡片布局: flex 换行, 末行也撑满整行 ---- */
+/* ---- 卡片布局: flex 换行, [min,max] 内尽量铺满行 ---- */
 .hosts-grid {
   position: relative;
   z-index: 1;
@@ -118,8 +118,9 @@ main { position: relative; padding: 28px 32px 16px; }
 .host-card {
   display: flex;
   flex-direction: column;
-  flex: 1 1 340px;
-  min-width: 300px;
+  flex: 1 1 420px;
+  min-width: 450px;
+  max-width: 500px;
   background: var(--card);
   border: 1px solid var(--line);
   border-top: 3px solid var(--accent);
@@ -239,7 +240,7 @@ main { position: relative; padding: 28px 32px 16px; }
   color: var(--muted);
   border-bottom: 1px solid var(--accent);
 }
-.chip-table td:first-child { font-family: var(--mono); }
+.chip-table td:first-child { font-family: var(--mono); white-space: nowrap; }
 .usage-cell { min-width: 104px; }
 .usage-label { white-space: nowrap; font-family: var(--mono); font-size: 11px; color: var(--muted); }
 
@@ -297,6 +298,26 @@ main { position: relative; padding: 28px 32px 16px; }
   letter-spacing: 0.05em;
   color: var(--c-active-deep);
 }
+.resv-toggle {
+  display: block;
+  width: 100%;
+  margin-top: 12px;
+  padding: 9px;
+  border: 1.5px solid var(--accent);
+  border-radius: 0;
+  background: transparent;
+  color: var(--accent-deep);
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s;
+}
+.resv-toggle:hover { background: var(--accent); color: #fff; }
+.resv-form { display: none; }
+.resv-form.open { display: block; }
 
 .queue-list { list-style: none; margin: 8px 0 0; padding: 0; }
 .queue-list li {

@@ -138,6 +138,7 @@ function hostCardShell(name) {
     <div class="status-box"></div>
     <div class="queue-title">排队占用</div>
     <div class="queue-box"></div>
+    <button type="button" class="resv-toggle">＋ 新增占用</button>
     <form class="resv-form" data-host="${esc(name)}">
       <div class="resv-grid">
         <label>卡范围
@@ -153,7 +154,7 @@ function hostCardShell(name) {
           <input name="owner" type="text" placeholder="你的名字" required>
         </label>
       </div>
-      <button type="submit">新增占用</button>
+      <button type="submit">提交</button>
       <div class="form-msg"></div>
     </form>
   </div>`;
@@ -233,6 +234,12 @@ function renderHosts() {
       const wasSelected = card.classList.contains("selected");
       box.querySelectorAll(".host-card.selected").forEach((c) => c.classList.remove("selected"));
       if (!wasSelected) card.classList.add("selected");
+    });
+    // 新增占用表单折叠/展开
+    card.querySelector(".resv-toggle").addEventListener("click", () => {
+      const form = card.querySelector(".resv-form");
+      const open = form.classList.toggle("open");
+      card.querySelector(".resv-toggle").textContent = open ? "－ 收起" : "＋ 新增占用";
     });
   });
   updateCards();
