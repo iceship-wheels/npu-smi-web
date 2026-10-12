@@ -9,12 +9,20 @@ description: Use when operating, debugging, or extending the npu-smi-web NPU mon
 
 Node.js 监控面板:每 5s SSH 轮询 NPU 主机采集卡占用,每 30s 独立采集运行模型。部署在 `node:22-alpine` 容器,数据持久化于 `data/`(挂载卷)。
 
-## When to Use
+## 职责边界
 
-- 模型不显示/模型名为空/容器名显示"宿主"
-- 主机断连/解析失败反复出现
-- 更新代码后重新部署
-- 修改采集逻辑、时区、重试机制
+AI agent 运维本面板的速查手册。
+
+**管**:
+- 运行期采集故障: 模型不显示 / 模型名为空 / 容器名显示"宿主" / 断连与解析失败反复出现
+- 采集机制改动: SSH 轮询、模型采集、重试、时区 (改前必读对应章节)
+- agent 视角的部署/更新速查
+
+**不管** (去仓库根 README.md):
+- 面向人的完整部署手册 (前置准备/配置/构建/启动)
+- 部署期排错 (构建失败/容器退出/挂载丢失)
+
+主机凭据等运维材料在本地 `ops/` 目录 (不入库), 详见 README「运维材料」一节。
 
 ## 模型采集 (server.js parseModels / pollModels)
 
@@ -30,6 +38,7 @@ Node.js 监控面板:每 5s SSH 轮询 NPU 主机采集卡占用,每 30s 独立�
 ## SSH 轮询与状态
 
 - 断连/解析失败都计入 `consecutive_failures`,达 `RETRY_LIMIT`(默认 5)才置失败,期间保留上次成功状态
+- 服务端 12s 连接超时只断本地连接,杀不掉远端命令;`command` 须包 `timeout 10` 让远端自杀,否则挂死进程在宿主机累积(症状: 偶发断连 + 主机上残留多个 npu-smi 进程)
 - `ok = connected && chips.length > 0`
 - 传输统一 UTC ISO(`new Date().toISOString()`,带 Z);前端 `new Date()` 按浏览器时区显示。勿写死时区偏移
 - 服务器时钟慢时用 HTTP 响应 `Date` 头校准(NTP 可能未同步)

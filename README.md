@@ -6,6 +6,16 @@ Real-time NPU status dashboard with reservation queue. Polls hosts via SSH every
 - 维护未来一周的排队占用清单（按设备分卡片，冲突检测，落盘持久化）
 - 每台设备独立公告栏（双击编辑）
 
+## 文档导航
+
+| 你是谁 / 要做什么 | 看哪里 |
+| --- | --- |
+| 部署、升级、日常运维本面板 | 本文档（README） |
+| 排查部署期问题（构建失败 / 容器退出 / 断连 / 解析失败） | 本文档「排错」一节 |
+| 排查运行期采集问题（模型不显示 / 容器名显示「宿主」） | [SKILL/npu-smi-web-ops/SKILL.md](SKILL/npu-smi-web-ops/SKILL.md) |
+| 找运维材料（主机凭据 / 环境清单） | 本文档「运维材料」一节 → 本地 `ops/` 目录 |
+| AI agent 运维本面板 | [SKILL/npu-smi-web-ops/SKILL.md](SKILL/npu-smi-web-ops/SKILL.md) |
+
 ## 目录结构
 
 ```
@@ -16,6 +26,7 @@ npu-smi-web/
 ├── scripts/
 │   └── npu-monitor.sh    # 键值版 npu-smi 输出转换脚本 (需安装到各 NPU 主机)
 ├── Dockerfile            # node:22-alpine 镜像
+├── SKILL/                # AI agent 运维技能手册
 └── data/                 # 运行时持久化 (queue.json / announcements.json, 不入库)
 ```
 
@@ -72,7 +83,7 @@ vi config.json
 | `username` | ✓ | SSH 用户，通常 root |
 | `password` | 二选一 | 密码认证 |
 | `key_path` | 二选一 | 私钥路径（优先于 password），容器内需能读到该路径 |
-| `command` | | 采集命令，默认 `npu-smi info -t 5`；键值版 npu-smi 用 `/usr/local/bin/npu-monitor.sh`（见步骤 5） |
+| `command` | | 采集命令，建议 `timeout 10 npu-smi info -t 5`；键值版 npu-smi 用 `timeout 10 /usr/local/bin/npu-monitor.sh`（见步骤 5） |
 
 > ⚠️ `config.json` 含密码，已在 `.gitignore` 中，**不要提交入库**。
 
@@ -130,7 +141,7 @@ curl -s -o /dev/null -w '%{http_code}\n' http://localhost:8000/   # 200
 **先在 NPU 主机上确认格式**：
 
 ```bash
-npu-smi info -t 5        # ① 旧版表格版: 可用, command 填默认
+npu-smi info -t 5        # ① 旧版表格版: 可用, command 填 timeout 10 npu-smi info -t 5
 npu-smi info -t usages -i 0   # ② 键值版 (Ascend910): 输出 "Key : Value", 解析器无法直接识别
 ```
 
@@ -151,7 +162,9 @@ ssh root@<npu-host> /usr/local/bin/npu-monitor.sh
 # | 0 | 0 | 3276 / 65536 |  ...
 ```
 
-然后在 `config.json` 中将该主机 `command` 设为 `/usr/local/bin/npu-monitor.sh`。
+然后在 `config.json` 中将该主机 `command` 设为 `timeout 10 /usr/local/bin/npu-monitor.sh`。
+
+> 无论哪种格式，`command` 都建议包一层 `timeout 10`：远端命令 10 秒未返回则自杀（先于服务端 12 秒连接超时），避免宿主机上残留挂死的采集进程。
 
 ### 6. 更新代码/配置后重新部署
 
@@ -183,12 +196,22 @@ docker run -d --name npu-smi-web --restart=unless-stopped \
 | --- | --- |
 | `badge` 显示「已断连」 | 检查容器→NPU 主机 22 端口连通；检查用户名/密码；npu-smi 是否在该主机 PATH 中 |
 | 显示「解析失败」且 raw 是 `Usage:` 帮助文本 | `npu-smi info -t 5` 不受支持，改用 `npu-monitor.sh`（步骤 5） |
-| 显示「解析失败」且 raw 是键值文本 | 同左：确认 command 指向 `/usr/local/bin/npu-monitor.sh` |
+| 显示「解析失败」且 raw 是键值文本 | 同左：确认 command 指向 `timeout 10 /usr/local/bin/npu-monitor.sh` |
 | 镜像构建报 `invalid argument` | 补 `--build-arg TARGETPLATFORM=linux/<arch>` |
 | 构建时 npm 报 `SELF_SIGNED_CERT_IN_CHAIN` | 代理中间人证书，Dockerfile 已含 `strict-ssl false` |
 | 容器启动即退出 | `docker logs npu-smi-web` 看报错；确认 8000 未被占用 |
 | 排队数据丢失 | 检查 `-v` 挂载是否正确；`/app/data` 是否可写 |
+| 偶发断连，且 NPU 主机上残留多个挂死的 `npu-smi` 进程 | 采集命令阻塞，`command` 未包 `timeout`，改为 `timeout 10 ...`（步骤 5） |
+
+> 运行期采集问题（模型不显示、模型名为空、容器名显示「宿主」）不在此表，见 [SKILL/npu-smi-web-ops/SKILL.md](SKILL/npu-smi-web-ops/SKILL.md) 的故障模式表。
 
 ## config.example.json 说明
 
 详见文件内 `_说明` 字段。认证方式二选一：填 `password` 或 `key_path`。
+
+## 运维材料（ops/）
+
+环境清单、主机凭据、运维手册等运维材料存放在**本地** `ops/` 目录，已被 `.gitignore` 与 `.dockerignore` 排除，**不入库、不进镜像、严禁上传公网**。
+
+- 本机存在 `ops/`：一切运维以其 `README.md` 为入口，harness 位于 `ops/harness/`
+- 本机不存在：说明这是未附带运维材料的副本，联系管理员获取，**不要凭空猜测主机凭据**
